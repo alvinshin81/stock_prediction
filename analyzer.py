@@ -10,6 +10,8 @@
 실행:   python analyzer.py
 """
 
+import json
+import os
 import sys
 from datetime import datetime, timedelta
 
@@ -677,6 +679,130 @@ def print_tomorrow_forecast(forecast: dict) -> None:
 
 
 # ════════════════════════════════════════════════════════════
+#  JSON 결과 빌드 (GitHub Pages용)
+# ════════════════════════════════════════════════════════════
+
+def _jv(v):
+    """numpy 스칼라 → JSON 직렬화 가능한 Python 기본형 변환."""
+    if isinstance(v, np.integer):
+        return int(v)
+    if isinstance(v, np.floating):
+        return float(v)
+    return v
+
+
+def build_results_dict(df: pd.DataFrame, result: dict, forecast: dict) -> dict:
+    """분석 결과 전체를 JSON 직렬화 가능한 dict로 반환."""
+    close  = df["close"]
+    price  = float(result["price"])
+    total  = result["total_score"]
+
+    rsi_s               = calc_rsi(close)
+    macd_s, sig_s, hs   = calc_macd(close)
+    upper_s, mid_s, lo_s = calc_bollinger(close)
+    mas                 = calc_moving_averages(close)
+
+    price_chg_pct = (close.iloc[-1] - close.iloc[-2]) / close.iloc[-2] * 100
+
+    label_map = {
+        "rsi": "RSI", "macd": "MACD", "bb": "볼린저밴드",
+        "ma": "이동평균선", "volume": "거래량",
+        "candle": "캔들패턴", "fibonacci": "피보나치",
+    }
+
+    return {
+        "meta": {
+            "ticker": TICKER,
+            "name":   TICKER_NAME,
+            "analyzed_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        },
+        "price": {
+            "current":    int(price),
+            "change_pct": round(float(price_chg_pct), 2),
+        },
+        "recommendation": {
+            "action":        result["action"],
+            "emoji":         result["emoji"],
+            "total_score":   total,
+            "strength_pct":  round(float(result["strength"]), 1),
+            "strength_label": result["strength_label"],
+            "entry":     int(_jv(result["entry"])),
+            "target":    int(_jv(result["target"])),
+            "target_pct":
+                round((float(result["target"]) / price - 1) * 100, 1)
+                if abs(total) >= 2 else 0,
+            "stop_loss": int(_jv(result["stop_loss"])),
+            "stop_loss_pct":
+                round((float(result["stop_loss"]) / price - 1) * 100, 1)
+                if abs(total) >= 2 else 0,
+        },
+        "levels": {
+            "support":    [int(_jv(s)) for s in result["support"]],
+            "resistance": [int(_jv(r)) for r in result["resistance"]],
+        },
+        "indicators": [
+            {
+                "name":   k,
+                "score":  v,
+                "detail": result["details"][k],
+                "arrow":  "▲" if v > 0 else ("▼" if v < 0 else "─"),
+            }
+            for k, v in result["scores"].items()
+        ],
+        "patterns": [
+            {"name": k, "detail": v}
+            for k, v in result["patterns"].items()
+        ],
+        "forecast": {
+            "p_up":           round(forecast["p_up"]   * 100, 1),
+            "p_down":         round(forecast["p_down"] * 100, 1),
+            "direction":      forecast["direction"],
+            "direction_emoji": forecast["d_emoji"],
+            "confidence":     forecast["confidence"],
+            "conf_range":     forecast["conf_range"],
+            "indicators": [
+                {
+                    "name":   label_map.get(k, k),
+                    "p_up":   round(forecast["probs"][k] * 100, 1),
+                    "weight": int(_FORECAST_WEIGHTS[k] * 100),
+                    "reason": forecast["reasons"][k],
+                }
+                for k in _FORECAST_WEIGHTS if k in forecast["probs"]
+            ],
+        },
+        "verify": {
+            "recent_closes": [
+                {"date": d.strftime("%Y-%m-%d"), "price": int(v)}
+                for d, v in close.tail(5).items()
+            ],
+            "rsi": [
+                {"date": d.strftime("%Y-%m-%d"), "value": round(float(v), 2)}
+                for d, v in rsi_s.tail(3).items()
+            ],
+            "macd": [
+                {
+                    "date":   d.strftime("%Y-%m-%d"),
+                    "macd":   round(float(macd_s[d]), 2),
+                    "signal": round(float(sig_s[d]),  2),
+                    "hist":   round(float(hs[d]),     2),
+                }
+                for d in macd_s.tail(3).index
+            ],
+            "bollinger": {
+                "upper":  round(float(upper_s.iloc[-1]), 0),
+                "middle": round(float(mid_s.iloc[-1]),   0),
+                "lower":  round(float(lo_s.iloc[-1]),    0),
+            },
+            "moving_averages": {
+                f"MA{p}": round(float(mas[f"MA{p}"].iloc[-1]), 0)
+                for p in MA_PERIODS
+                if not pd.isna(mas[f"MA{p}"].iloc[-1])
+            },
+        },
+    }
+
+
+# ════════════════════════════════════════════════════════════
 #  검증 출력 (--verify 모드)
 # ════════════════════════════════════════════════════════════
 
@@ -800,6 +926,13 @@ def run(
         df       = fetch_ohlcv(ticker)
         result   = generate_recommendation(df)
         forecast = calc_tomorrow_forecast(df, result["patterns"])
+        data     = build_results_dict(df, result, forecast)
+
+        os.makedirs("docs", exist_ok=True)
+        with open("docs/results.json", "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+        print("docs/results.json 저장 완료\n")
+
         print_verify(df)
         print_report(result, ticker, name)
         print_tomorrow_forecast(forecast)

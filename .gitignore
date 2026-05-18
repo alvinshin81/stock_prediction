@@ -216,8 +216,6 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
-/.idea/
-/.idea/inspectionProfiles/profiles_settings.xml
-/.idea/inspectionProfiles/Project_Default.xml
-/.idea/modules.xml
+
+# idea1
 .idea/

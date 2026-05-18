@@ -1,0 +1,40 @@
+name: 삼성전자 주식 분석
+
+on:
+  schedule:
+    # KST 09:00~15:30 = UTC 00:00~06:30, 평일 30분 간격
+    - cron: '0,30 0-6 * * 1-5'
+  workflow_dispatch: # 수동 실행 허용
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: 저장소 체크아웃
+        uses: actions/checkout@v4
+
+      - name: Python 3.13 설정
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          cache: 'pip'
+
+      - name: 패키지 설치
+        run: pip install -r requirements.txt
+
+      - name: 분석 실행
+        run: python analyzer.py
+
+      - name: 결과 커밋 및 푸시
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/results.json
+          git diff --cached --quiet && echo "변경 없음, 커밋 생략" || (
+            git commit -m "chore: 분석 결과 업데이트 ($(TZ='Asia/Seoul' date +'%Y-%m-%d %H:%M KST'))"
+            git pull --rebase origin main
+            git push
+          )

@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>삼성전자 주식 분석</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans KR', sans-serif;
+      background: #f0f2f5;
+      color: #1a1a1a;
+      min-height: 100vh;
+    }
+
+    .container { max-width: 600px; margin: 0 auto; padding: 16px 16px 40px; }
+
+    /* 헤더 */
+    header { text-align: center; padding: 24px 0 8px; }
+    header h1 { font-size: 1.35rem; font-weight: 800; letter-spacing: -0.3px; }
+    header p  { color: #888; font-size: 0.82rem; margin-top: 4px; }
+
+    /* 조회 버튼 */
+    .btn-query {
+      display: block; width: 100%; padding: 15px;
+      background: #1a73e8; color: #fff;
+      border: none; border-radius: 14px;
+      font-size: 1.05rem; font-weight: 700;
+      cursor: pointer; margin: 16px 0 6px;
+      transition: background 0.15s;
+    }
+    .btn-query:active  { background: #1254b5; }
+    .btn-query:disabled { background: #aaa; cursor: default; }
+
+    .last-updated {
+      text-align: center; color: #aaa;
+      font-size: 0.78rem; margin-bottom: 16px;
+    }
+
+    /* 상태 메시지 */
+    .loading { text-align: center; padding: 48px 0; color: #888; font-size: 0.95rem; }
+    .error   { text-align: center; padding: 24px; color: #c62828; font-size: 0.9rem; }
+
+    /* 카드 */
+    .card {
+      background: #fff; border-radius: 18px;
+      padding: 18px 16px; margin-bottom: 12px;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.07);
+    }
+    .card-title {
+      font-size: 0.82rem; font-weight: 700;
+      color: #888; text-transform: uppercase;
+      letter-spacing: 0.5px; margin-bottom: 12px;
+    }
+
+    /* 현재가 */
+    .price-main   { font-size: 2rem; font-weight: 800; line-height: 1.1; }
+    .price-change { font-size: 1rem; font-weight: 600; margin-top: 2px; }
+    .up   { color: #d32f2f; }
+    .down { color: #1565c0; }
+
+    /* 추천 배지 */
+    .action-badge {
+      display: inline-block; padding: 6px 16px;
+      border-radius: 24px; font-size: 1rem; font-weight: 700;
+      margin: 10px 0 8px;
+    }
+    .strong-buy  { background: #1b5e20; color: #fff; }
+    .buy         { background: #e8f5e9; color: #2e7d32; }
+    .strong-sell { background: #b71c1c; color: #fff; }
+    .sell        { background: #fce4ec; color: #c62828; }
+    .hold        { background: #fff8e1; color: #e65100; }
+
+    .strength-row {
+      display: flex; justify-content: space-between;
+      font-size: 0.83rem; color: #555; margin-top: 4px;
+    }
+
+    /* 매매 전략 */
+    .strategy-grid {
+      display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;
+      text-align: center;
+    }
+    .strategy-item .s-label { font-size: 0.72rem; color: #aaa; margin-bottom: 4px; }
+    .strategy-item .s-value { font-size: 1rem; font-weight: 800; }
+    .strategy-item .s-pct   { font-size: 0.78rem; font-weight: 600; margin-top: 2px; }
+    .s-entry .s-value { color: #1a73e8; }
+    .s-target .s-value { color: #2e7d32; }
+    .s-stop   .s-value { color: #c62828; }
+
+    /* 지지/저항 칩 */
+    .chip-row  { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+    .chip {
+      padding: 4px 10px; border-radius: 8px;
+      font-size: 0.8rem; font-weight: 700;
+    }
+    .chip.support    { background: #e3f2fd; color: #1565c0; }
+    .chip.resistance { background: #fce4ec; color: #c62828; }
+
+    /* 테이블 */
+    .tbl-wrap { overflow-x: auto; }
+    table     { width: 100%; border-collapse: collapse; font-size: 0.83rem; }
+    th {
+      background: #f8f9fa; color: #666;
+      font-weight: 700; padding: 8px 6px;
+      text-align: left; white-space: nowrap;
+    }
+    td { padding: 8px 6px; border-top: 1px solid #f0f0f0; vertical-align: top; }
+    td.num { text-align: right; white-space: nowrap; }
+
+    .arr-up  { color: #d32f2f; font-weight: 700; }
+    .arr-dn  { color: #1565c0; font-weight: 700; }
+    .arr-neu { color: #aaa; }
+
+    /* 예측 바 */
+    .forecast-row {
+      display: flex; justify-content: space-between;
+      font-size: 0.88rem; margin-bottom: 5px;
+    }
+    .forecast-bar {
+      height: 14px; border-radius: 7px;
+      background: #f0f0f0; overflow: hidden; margin-bottom: 12px;
+    }
+    .forecast-fill {
+      height: 100%; border-radius: 7px;
+      background: linear-gradient(90deg, #43a047, #81c784);
+      transition: width 0.6s ease;
+    }
+    .forecast-meta {
+      font-size: 0.83rem; color: #555; margin-bottom: 12px;
+      display: flex; flex-wrap: wrap; gap: 6px;
+    }
+    .forecast-meta span { background: #f0f2f5; padding: 3px 8px; border-radius: 6px; }
+
+    .notice {
+      font-size: 0.74rem; color: #aaa;
+      margin-top: 12px; line-height: 1.5;
+    }
+
+    /* 섹션 구분선 */
+    .sec-label {
+      font-size: 0.78rem; color: #aaa; font-weight: 700;
+      margin: 12px 0 6px;
+    }
+
+    #content { display: none; }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <h1>📊 삼성전자 (005930)</h1>
+    <p>기술적 지표 기반 매수/매도 추천 &amp; 내일 방향 예측</p>
+  </header>
+
+  <button class="btn-query" id="btnQuery" onclick="loadData()">조회</button>
+  <div class="last-updated" id="lastUpdated">버튼을 눌러 최신 분석을 불러오세요.</div>
+
+  <div class="loading" id="loading" style="display:none">⏳ 분석 결과 불러오는 중…</div>
+  <div class="error"   id="errorMsg" style="display:none"></div>
+
+  <div id="content">
+
+    <!-- ① 현재가 & 추천 -->
+    <div class="card">
+      <div class="card-title">현재가 &amp; 추천</div>
+      <div class="price-main"   id="price"></div>
+      <div class="price-change" id="priceChange"></div>
+      <div id="actionBadge"></div>
+      <div class="strength-row">
+        <span id="strengthLabel"></span>
+        <span id="totalScore"></span>
+      </div>
+    </div>
+
+    <!-- ② 매매 전략 -->
+    <div class="card" id="strategyCard">
+      <div class="card-title">매매 전략</div>
+      <div class="strategy-grid">
+        <div class="strategy-item s-entry">
+          <div class="s-label">진입가</div>
+          <div class="s-value" id="sEntry"></div>
+        </div>
+        <div class="strategy-item s-target">
+          <div class="s-label">목표가</div>
+          <div class="s-value" id="sTarget"></div>
+          <div class="s-pct up" id="sTargetPct"></div>
+        </div>
+        <div class="strategy-item s-stop">
+          <div class="s-label">손절가</div>
+          <div class="s-value" id="sStop"></div>
+          <div class="s-pct down" id="sStopPct"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ③ 지지/저항 -->
+    <div class="card">
+      <div class="card-title">지지선 / 저항선</div>
+      <div class="sec-label">지지선</div>
+      <div class="chip-row" id="supports"></div>
+      <div class="sec-label" style="margin-top:10px">저항선</div>
+      <div class="chip-row" id="resistances"></div>
+    </div>
+
+    <!-- ④ 기술적 지표 -->
+    <div class="card">
+      <div class="card-title">기술적 지표</div>
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr><th>지표</th><th>점수</th><th>내용</th></tr>
+          </thead>
+          <tbody id="indBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ⑤ 캔들 패턴 -->
+    <div class="card">
+      <div class="card-title">캔들 패턴</div>
+      <div id="patterns"></div>
+    </div>
+
+    <!-- ⑥ 내일 방향 예측 -->
+    <div class="card">
+      <div class="card-title">📈 내일 방향 예측</div>
+      <div class="forecast-row">
+        <span>상승 <strong id="pUp"></strong></span>
+        <span>하락 <strong id="pDown"></strong></span>
+      </div>
+      <div class="forecast-bar">
+        <div class="forecast-fill" id="barFill"></div>
+      </div>
+      <div class="forecast-meta">
+        <span>예측: <strong id="fcDir"></strong></span>
+        <span>신뢰도: <strong id="fcConf"></strong></span>
+        <span>추정범위: ±<strong id="fcRange"></strong>%p</span>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr><th>지표</th><th>상승확률</th><th>가중치</th><th>근거</th></tr>
+          </thead>
+          <tbody id="fcBody"></tbody>
+        </table>
+      </div>
+      <p class="notice">
+        ⚠ 이 수치는 과거 동일 신호 조합의 통계적 경향값입니다.<br>
+        미국 야간 시장·뉴스·외국인 수급은 반영되지 않습니다.
+      </p>
+    </div>
+
+    <!-- ⑦ 지표 원시값 (검증) -->
+    <div class="card">
+      <div class="card-title">지표 원시값 (TradingView 교차 확인용)</div>
+
+      <div class="sec-label">최근 5거래일 종가</div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>날짜</th><th class="num">종가 (원)</th></tr></thead>
+          <tbody id="closesBody"></tbody>
+        </table>
+      </div>
+
+      <div class="sec-label">RSI (14)</div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>날짜</th><th class="num">RSI</th></tr></thead>
+          <tbody id="rsiBody"></tbody>
+        </table>
+      </div>
+
+      <div class="sec-label">MACD (12, 26, 9)</div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>날짜</th><th class="num">MACD</th><th class="num">Signal</th><th class="num">Hist</th></tr></thead>
+          <tbody id="macdBody"></tbody>
+        </table>
+      </div>
+
+      <div class="sec-label">볼린저밴드 (최신)</div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>구분</th><th class="num">값 (원)</th></tr></thead>
+          <tbody id="bbBody"></tbody>
+        </table>
+      </div>
+
+      <div class="sec-label">이동평균선 (최신)</div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>기간</th><th class="num">값 (원)</th></tr></thead>
+          <tbody id="maBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div><!-- /#content -->
+</div><!-- /.container -->
+
+<script>
+  const fmt = n => Number(n).toLocaleString('ko-KR');
+  const sgn = n => (n >= 0 ? '+' : '') + n;
+
+  function badgeClass(action) {
+    if (action.includes('강한 매수')) return 'strong-buy';
+    if (action.includes('매수'))     return 'buy';
+    if (action.includes('강한 매도')) return 'strong-sell';
+    if (action.includes('매도'))     return 'sell';
+    return 'hold';
+  }
+
+  function render(d) {
+    const rec = d.recommendation;
+    const price = d.price.current;
+
+    // ① 현재가
+    document.getElementById('price').textContent = fmt(price) + ' 원';
+    const chgEl = document.getElementById('priceChange');
+    chgEl.textContent = sgn(d.price.change_pct) + '%';
+    chgEl.className = 'price-change ' + (d.price.change_pct >= 0 ? 'up' : 'down');
+
+    const badge = document.getElementById('actionBadge');
+    badge.textContent = rec.emoji + ' ' + rec.action;
+    badge.className = 'action-badge ' + badgeClass(rec.action);
+
+    document.getElementById('strengthLabel').textContent =
+      '신호 강도: ' + rec.strength_label + ' (' + rec.strength_pct + '%)';
+    document.getElementById('totalScore').textContent =
+      '종합 점수: ' + sgn(rec.total_score);
+
+    // ② 매매 전략
+    if (Math.abs(rec.total_score) >= 2) {
+      document.getElementById('strategyCard').style.display = 'block';
+      document.getElementById('sEntry').textContent  = fmt(rec.entry);
+      document.getElementById('sTarget').textContent = fmt(rec.target);
+      document.getElementById('sTargetPct').textContent = sgn(rec.target_pct) + '%';
+      document.getElementById('sStop').textContent   = fmt(rec.stop_loss);
+      document.getElementById('sStopPct').textContent = sgn(rec.stop_loss_pct) + '%';
+    } else {
+      document.getElementById('strategyCard').style.display = 'none';
+    }
+
+    // ③ 지지/저항
+    document.getElementById('supports').innerHTML =
+      d.levels.support.map(s => `<span class="chip support">${fmt(s)}</span>`).join('');
+    document.getElementById('resistances').innerHTML =
+      d.levels.resistance.map(r => `<span class="chip resistance">${fmt(r)}</span>`).join('');
+
+    // ④ 기술적 지표
+    document.getElementById('indBody').innerHTML = d.indicators.map(ind => {
+      const cls = ind.score > 0 ? 'arr-up' : ind.score < 0 ? 'arr-dn' : 'arr-neu';
+      return `<tr>
+        <td><strong>${ind.name}</strong></td>
+        <td class="${cls}">${ind.arrow} (${sgn(ind.score)})</td>
+        <td>${ind.detail}</td>
+      </tr>`;
+    }).join('');
+
+    // ⑤ 캔들 패턴
+    const patEl = document.getElementById('patterns');
+    patEl.innerHTML = d.patterns.length
+      ? d.patterns.map(p =>
+          `<div style="padding:6px 0;border-top:1px solid #f0f0f0">
+            <strong>◆ ${p.name}</strong><br>
+            <span style="font-size:0.82rem;color:#555">${p.detail}</span>
+          </div>`
+        ).join('')
+      : '<span style="color:#aaa;font-size:0.85rem">─ 특이 패턴 없음</span>';
+
+    // ⑥ 내일 예측
+    const fc = d.forecast;
+    document.getElementById('pUp').textContent   = fc.p_up   + '%';
+    document.getElementById('pDown').textContent = fc.p_down + '%';
+    document.getElementById('barFill').style.width = fc.p_up + '%';
+    document.getElementById('fcDir').textContent  = fc.direction_emoji + ' ' + fc.direction;
+    document.getElementById('fcConf').textContent = fc.confidence;
+    document.getElementById('fcRange').textContent = fc.conf_range;
+
+    document.getElementById('fcBody').innerHTML = fc.indicators.map(fi => `<tr>
+      <td>${fi.name}</td>
+      <td class="num">${fi.p_up}%</td>
+      <td class="num">${fi.weight}%</td>
+      <td style="font-size:0.78rem;color:#555">${fi.reason}</td>
+    </tr>`).join('');
+
+    // ⑦ 검증 데이터
+    document.getElementById('closesBody').innerHTML =
+      d.verify.recent_closes.map(r =>
+        `<tr><td>${r.date}</td><td class="num">${fmt(r.price)}</td></tr>`
+      ).join('');
+
+    document.getElementById('rsiBody').innerHTML =
+      d.verify.rsi.map(r =>
+        `<tr><td>${r.date}</td><td class="num">${r.value}</td></tr>`
+      ).join('');
+
+    document.getElementById('macdBody').innerHTML =
+      d.verify.macd.map(r =>
+        `<tr>
+          <td>${r.date}</td>
+          <td class="num">${r.macd.toLocaleString('ko-KR')}</td>
+          <td class="num">${r.signal.toLocaleString('ko-KR')}</td>
+          <td class="num">${r.hist.toLocaleString('ko-KR')}</td>
+        </tr>`
+      ).join('');
+
+    const bb = d.verify.bollinger;
+    document.getElementById('bbBody').innerHTML =
+      `<tr><td>Upper</td><td class="num">${fmt(bb.upper)}</td></tr>
+       <tr><td>Middle</td><td class="num">${fmt(bb.middle)}</td></tr>
+       <tr><td>Lower</td><td class="num">${fmt(bb.lower)}</td></tr>`;
+
+    document.getElementById('maBody').innerHTML =
+      Object.entries(d.verify.moving_averages).map(([k, v]) =>
+        `<tr><td>${k}</td><td class="num">${fmt(v)}</td></tr>`
+      ).join('');
+
+    // 마지막 분석 시각 & 표시
+    document.getElementById('lastUpdated').textContent =
+      '마지막 분석: ' + d.meta.analyzed_at;
+    document.getElementById('content').style.display = 'block';
+  }
+
+  async function loadData() {
+    const btn     = document.getElementById('btnQuery');
+    const loading = document.getElementById('loading');
+    const errorEl = document.getElementById('errorMsg');
+    const content = document.getElementById('content');
+
+    btn.disabled = true;
+    btn.textContent = '불러오는 중…';
+    loading.style.display = 'block';
+    errorEl.style.display = 'none';
+    content.style.display = 'none';
+
+    try {
+      const res = await fetch('./results.json?t=' + Date.now());
+      if (!res.ok) throw new Error('results.json 을 찾을 수 없습니다. (GitHub Actions가 아직 실행되지 않았을 수 있습니다.)');
+      const data = await res.json();
+      render(data);
+    } catch (e) {
+      errorEl.textContent = '❌ ' + e.message;
+      errorEl.style.display = 'block';
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '조회';
+      loading.style.display = 'none';
+    }
+  }
+</script>
+</body>
+</html>
