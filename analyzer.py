@@ -998,7 +998,7 @@ def export_history_json() -> dict:
             WHERE ticker = ? AND prev_prediction IS NOT NULL
             ORDER BY date DESC LIMIT 30
         """, (ticker,)).fetchall()
-        history[ticker] = [
+        entries = [
             {
                 "date":              r[0],
                 "prev_prediction":   r[1],
@@ -1006,9 +1006,30 @@ def export_history_json() -> dict:
                 "actual_direction":  r[3],
                 "actual_change_pct": r[4],
                 "correct": (r[1] == r[3]) if r[1] and r[3] else None,
+                "is_preview":        False,
             }
             for r in rows
         ]
+
+        # 오늘 예측(다음 거래일 미리보기) 추가
+        latest = con.execute("""
+            SELECT date, today_prediction, today_p_up
+            FROM predictions
+            WHERE ticker = ?
+            ORDER BY date DESC LIMIT 1
+        """, (ticker,)).fetchone()
+        if latest and latest[1]:
+            entries.insert(0, {
+                "date":              latest[0],
+                "prev_prediction":   latest[1],
+                "prev_p_up":         latest[2],
+                "actual_direction":  None,
+                "actual_change_pct": None,
+                "correct":           None,
+                "is_preview":        True,
+            })
+
+        history[ticker] = entries
     con.close()
     return history
 

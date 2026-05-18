@@ -138,6 +138,15 @@
       margin-top: 12px; line-height: 1.5;
     }
 
+    /* 미리보기 행 */
+    .row-preview td { background: #f0f4ff; color: #555; }
+    .preview-badge {
+      display: inline-block; font-size: 0.68rem; font-weight: 700;
+      background: #1a73e8; color: #fff;
+      border-radius: 4px; padding: 1px 5px; margin-left: 4px;
+      vertical-align: middle;
+    }
+
     /* 적중률 뱃지 */
     .accuracy-bar {
       display: flex; align-items: center; gap: 10px;
@@ -501,6 +510,16 @@
       `누적 적중률&ensp;<strong class="${cls}">${correct}/${scored.length}회 (${pct}%)</strong>`;
 
     tbody.innerHTML = rows.map(r => {
+      if (r.is_preview) {
+        const predCls = r.prev_prediction === '상승' ? 'arr-up' : 'arr-dn';
+        return `<tr class="row-preview">
+          <td>${r.date}<span class="preview-badge">내일예측</span></td>
+          <td class="${predCls}">${r.prev_prediction}</td>
+          <td class="num">${r.prev_p_up}%</td>
+          <td style="color:#aaa">미확정</td>
+          <td style="text-align:center;color:#aaa">─</td>
+        </tr>`;
+      }
       const predCls = r.prev_prediction === '상승' ? 'arr-up' : 'arr-dn';
       const actCls  = r.actual_direction === '상승' ? 'arr-up' : 'arr-dn';
       const pct_str = (r.actual_change_pct >= 0 ? '+' : '') + r.actual_change_pct + '%';
