@@ -1,0 +1,7 @@
+# Python 3.13.7 기준 호환 버전
+#
+# 설치: pip install -r requirements.txt
+
+pykrx==1.2.8
+pandas==2.2.3
+numpy==2.2.6
