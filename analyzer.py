@@ -15,13 +15,14 @@ import json
 import os
 import sqlite3
 import sys
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 import numpy as np
 import pandas as pd
 from pykrx import stock
 
 DB_PATH = "data/predictions.db"
+KST = timezone(timedelta(hours=9))
 
 # ── 분석 대상 ────────────────────────────────────────────────
 TICKERS = [
@@ -47,8 +48,8 @@ VOL_MID = 1.2    # 평균 대비 1.2배 이상 → 증가
 
 def fetch_ohlcv(ticker: str, days: int = HISTORY_DAYS) -> pd.DataFrame:
     """pykrx로 OHLCV 조회. 주말·공휴일 여유를 위해 2배 기간 요청 후 tail(days)."""
-    end = datetime.today().strftime("%Y%m%d")
-    start = (datetime.today() - timedelta(days=days * 2)).strftime("%Y%m%d")
+    end = datetime.now(KST).strftime("%Y%m%d")
+    start = (datetime.now(KST) - timedelta(days=days * 2)).strftime("%Y%m%d")
     df = stock.get_market_ohlcv(start, end, ticker)
     if df.empty:
         raise ValueError(f"{ticker} 데이터 없음 — 장 개장 여부와 티커를 확인하세요.")
@@ -721,7 +722,7 @@ def build_results_dict(df: pd.DataFrame, result: dict, forecast: dict,
         "meta": {
             "ticker": ticker,
             "name":   name,
-            "analyzed_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "analyzed_at": datetime.now(KST).strftime("%Y-%m-%d %H:%M:%S"),
         },
         "price": {
             "current":    int(price),
@@ -870,7 +871,7 @@ def print_verify(df: pd.DataFrame) -> None:
 # ════════════════════════════════════════════════════════════
 
 def print_report(result: dict, ticker: str, name: str) -> None:
-    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    now = datetime.now(KST).strftime("%Y-%m-%d %H:%M:%S")
     price = result["price"]
     total = result["total_score"]
 
@@ -1043,7 +1044,7 @@ def run() -> None:
             json.dump(all_results, f, ensure_ascii=False, indent=2)
         print("docs/results.json 저장 완료\n")
 
-        today_str = datetime.now().strftime("%Y-%m-%d")
+        today_str = datetime.now(KST).strftime("%Y-%m-%d")
         for ticker, _ in TICKERS:
             if ticker in all_results:
                 d = all_results[ticker]
