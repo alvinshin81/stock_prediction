@@ -138,6 +138,18 @@
       margin-top: 12px; line-height: 1.5;
     }
 
+    /* 적중률 뱃지 */
+    .accuracy-bar {
+      display: flex; align-items: center; gap: 10px;
+      background: #f8f9fa; border-radius: 10px;
+      padding: 10px 14px; margin-bottom: 12px;
+      font-size: 0.88rem;
+    }
+    .accuracy-bar strong { font-size: 1.1rem; }
+    .acc-high { color: #2e7d32; }
+    .acc-mid  { color: #e65100; }
+    .acc-low  { color: #c62828; }
+
     /* 섹션 구분선 */
     .sec-label {
       font-size: 0.78rem; color: #aaa; font-weight: 700;
@@ -379,6 +391,29 @@
       </div>
     </div>
 
+    <!-- ⑧ 일별 예측 결과 비교 -->
+    <div class="card">
+      <div class="card-title">📋 일별 예측 결과 비교</div>
+      <div class="accuracy-bar" id="historyAccuracy" style="display:none"></div>
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>날짜</th>
+              <th>전일 예측</th>
+              <th class="num">상승확률</th>
+              <th>금일 결과</th>
+              <th style="text-align:center">적중</th>
+            </tr>
+          </thead>
+          <tbody id="historyBody"></tbody>
+        </table>
+      </div>
+      <p class="notice" id="historyNotice">
+        ─ 전일 예측 데이터가 아직 없습니다. 다음 거래일 분석 후 기록됩니다.
+      </p>
+    </div>
+
   </div><!-- /#content -->
 </div><!-- /.container -->
 
@@ -431,14 +466,64 @@
   const fmt = n => Number(n).toLocaleString('ko-KR');
   const sgn = n => (n >= 0 ? '+' : '') + n;
 
-  let allData   = null;
-  let activeTab = '005930';
+  let allData    = null;
+  let allHistory = null;
+  let activeTab  = '005930';
 
   function switchTab(ticker, el) {
     activeTab = ticker;
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     el.classList.add('active');
-    if (allData && allData[ticker]) render(allData[ticker]);
+    if (allData    && allData[ticker])    render(allData[ticker]);
+    if (allHistory && allHistory[ticker]) renderHistory(allHistory[ticker]);
+  }
+
+  function renderHistory(rows) {
+    const tbody  = document.getElementById('historyBody');
+    const notice = document.getElementById('historyNotice');
+    const accEl  = document.getElementById('historyAccuracy');
+
+    if (!rows || rows.length === 0) {
+      tbody.innerHTML = '';
+      notice.style.display = 'block';
+      accEl.style.display  = 'none';
+      return;
+    }
+
+    notice.style.display = 'none';
+    accEl.style.display  = 'flex';
+
+    const scored  = rows.filter(r => r.correct !== null);
+    const correct = scored.filter(r => r.correct).length;
+    const pct     = scored.length > 0 ? Math.round(correct / scored.length * 100) : 0;
+    const cls     = pct >= 60 ? 'acc-high' : pct >= 50 ? 'acc-mid' : 'acc-low';
+    accEl.innerHTML =
+      `누적 적중률&ensp;<strong class="${cls}">${correct}/${scored.length}회 (${pct}%)</strong>`;
+
+    tbody.innerHTML = rows.map(r => {
+      const predCls = r.prev_prediction === '상승' ? 'arr-up' : 'arr-dn';
+      const actCls  = r.actual_direction === '상승' ? 'arr-up' : 'arr-dn';
+      const pct_str = (r.actual_change_pct >= 0 ? '+' : '') + r.actual_change_pct + '%';
+      const hit     = r.correct === null ? '─' : (r.correct ? '✅' : '❌');
+      return `<tr>
+        <td>${r.date}</td>
+        <td class="${predCls}">${r.prev_prediction}</td>
+        <td class="num">${r.prev_p_up}%</td>
+        <td class="${actCls}">${r.actual_direction} (${pct_str})</td>
+        <td style="text-align:center">${hit}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  async function loadHistory() {
+    try {
+      const res = await fetch('./history.json?t=' + Date.now());
+      if (!res.ok) return;
+      allHistory = await res.json();
+      renderHistory(allHistory[activeTab] || []);
+    } catch (_) {
+      // history.json 없으면 조용히 무시
+    }
   }
 
   function badgeClass(action) {
@@ -579,6 +664,7 @@
       allData = await res.json();
       if (!allData[activeTab]) throw new Error(activeTab + ' 데이터가 없습니다.');
       render(allData[activeTab]);
+      await loadHistory();
     } catch (e) {
       errorEl.textContent = '❌ ' + e.message;
       errorEl.style.display = 'block';

@@ -13,12 +13,15 @@
 
 import json
 import os
+import sqlite3
 import sys
 from datetime import datetime, timedelta
 
 import numpy as np
 import pandas as pd
 from pykrx import stock
+
+DB_PATH = "data/predictions.db"
 
 # ── 분석 대상 ────────────────────────────────────────────────
 TICKERS = [
@@ -918,6 +921,98 @@ def print_report(result: dict, ticker: str, name: str) -> None:
 
 
 # ════════════════════════════════════════════════════════════
+#  예측 이력 DB (SQLite)
+# ════════════════════════════════════════════════════════════
+
+def _init_db(con: sqlite3.Connection) -> None:
+    con.execute("""
+        CREATE TABLE IF NOT EXISTS predictions (
+            date              TEXT NOT NULL,
+            ticker            TEXT NOT NULL,
+            prev_prediction   TEXT,
+            prev_p_up         REAL,
+            actual_direction  TEXT,
+            actual_change_pct REAL,
+            today_prediction  TEXT,
+            today_p_up        REAL,
+            PRIMARY KEY (date, ticker)
+        )
+    """)
+    con.commit()
+
+
+def update_prediction_db(ticker: str, today_date: str,
+                         actual_change_pct: float, forecast_json: dict) -> None:
+    """당일 예측·실제 결과를 DB에 upsert한다."""
+    os.makedirs("data", exist_ok=True)
+    con = sqlite3.connect(DB_PATH)
+    _init_db(con)
+
+    prev_row = con.execute("""
+        SELECT today_prediction, today_p_up
+        FROM predictions
+        WHERE ticker = ? AND date < ?
+        ORDER BY date DESC LIMIT 1
+    """, (ticker, today_date)).fetchone()
+    prev_prediction = prev_row[0] if prev_row else None
+    prev_p_up       = prev_row[1] if prev_row else None
+
+    actual_direction = (
+        "상승" if actual_change_pct > 0 else
+        "하락" if actual_change_pct < 0 else "보합"
+    )
+
+    con.execute("""
+        INSERT INTO predictions
+            (date, ticker, prev_prediction, prev_p_up,
+             actual_direction, actual_change_pct,
+             today_prediction, today_p_up)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        ON CONFLICT(date, ticker) DO UPDATE SET
+            actual_direction  = excluded.actual_direction,
+            actual_change_pct = excluded.actual_change_pct,
+            today_prediction  = excluded.today_prediction,
+            today_p_up        = excluded.today_p_up
+    """, (
+        today_date, ticker,
+        prev_prediction, prev_p_up,
+        actual_direction, round(actual_change_pct, 2),
+        forecast_json["direction"], forecast_json["p_up"],
+    ))
+    con.commit()
+    con.close()
+
+
+def export_history_json() -> dict:
+    """DB 예측 이력을 JSON 직렬화 가능한 dict로 반환."""
+    if not os.path.exists(DB_PATH):
+        return {}
+    con = sqlite3.connect(DB_PATH)
+    history: dict = {}
+    for ticker, _ in TICKERS:
+        rows = con.execute("""
+            SELECT date, prev_prediction, prev_p_up,
+                   actual_direction, actual_change_pct
+            FROM predictions
+            WHERE ticker = ? AND prev_prediction IS NOT NULL
+            ORDER BY date DESC LIMIT 30
+        """, (ticker,)).fetchall()
+        history[ticker] = [
+            {
+                "date":              r[0],
+                "prev_prediction":   r[1],
+                "prev_p_up":         r[2],
+                "actual_direction":  r[3],
+                "actual_change_pct": r[4],
+                "correct": (r[1] == r[3]) if r[1] and r[3] else None,
+            }
+            for r in rows
+        ]
+    con.close()
+    return history
+
+
+# ════════════════════════════════════════════════════════════
 #  메인 루프
 # ════════════════════════════════════════════════════════════
 
@@ -947,6 +1042,18 @@ def run() -> None:
         with open("docs/results.json", "w", encoding="utf-8") as f:
             json.dump(all_results, f, ensure_ascii=False, indent=2)
         print("docs/results.json 저장 완료\n")
+
+        today_str = datetime.now().strftime("%Y-%m-%d")
+        for ticker, _ in TICKERS:
+            if ticker in all_results:
+                d = all_results[ticker]
+                update_prediction_db(ticker, today_str,
+                                     d["price"]["change_pct"], d["forecast"])
+
+        history = export_history_json()
+        with open("docs/history.json", "w", encoding="utf-8") as f:
+            json.dump(history, f, ensure_ascii=False, indent=2)
+        print("docs/history.json 저장 완료\n")
     else:
         print("[오류] 분석 결과가 없어 저장을 건너뜁니다.")
         sys.exit(1)
