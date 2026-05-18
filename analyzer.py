@@ -1005,7 +1005,7 @@ def export_history_json() -> dict:
                 "prev_p_up":         r[2],
                 "actual_direction":  r[3],
                 "actual_change_pct": r[4],
-                "correct": (r[1] == r[3]) if r[1] and r[3] else None,
+                "correct": (r[1] == r[3]) if (r[1] and r[3] and r[1] != "불확실") else None,
                 "is_preview":        False,
             }
             for r in rows
