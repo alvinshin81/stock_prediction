@@ -160,9 +160,70 @@
     }
 
     #content { display: none; }
+
+    /* 로그인 오버레이 */
+    #loginOverlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.55);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 9999;
+    }
+    .login-box {
+      background: #fff; border-radius: 20px;
+      padding: 32px 28px; width: 320px; max-width: 90vw;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+    }
+    .login-box h2 {
+      font-size: 1.15rem; font-weight: 800;
+      text-align: center; margin-bottom: 6px;
+    }
+    .login-box p {
+      font-size: 0.8rem; color: #888;
+      text-align: center; margin-bottom: 20px;
+    }
+    .login-box label {
+      display: block; font-size: 0.8rem;
+      font-weight: 700; color: #555; margin-bottom: 4px;
+    }
+    .login-box input {
+      display: block; width: 100%;
+      padding: 11px 14px; margin-bottom: 14px;
+      border: 1.5px solid #ddd; border-radius: 10px;
+      font-size: 0.95rem; outline: none;
+      transition: border-color 0.15s;
+    }
+    .login-box input:focus { border-color: #1a73e8; }
+    .btn-login {
+      display: block; width: 100%; padding: 13px;
+      background: #1a73e8; color: #fff;
+      border: none; border-radius: 12px;
+      font-size: 1rem; font-weight: 700;
+      cursor: pointer; transition: background 0.15s;
+    }
+    .btn-login:active { background: #1254b5; }
+    .login-error {
+      text-align: center; color: #c62828;
+      font-size: 0.83rem; margin-top: 10px;
+      min-height: 1.2em;
+    }
   </style>
 </head>
 <body>
+
+<!-- 로그인 오버레이 -->
+<div id="loginOverlay">
+  <div class="login-box">
+    <h2>🔒 주식 분석 대시보드</h2>
+    <p>접근 권한이 필요합니다</p>
+    <label for="loginId">아이디</label>
+    <input type="text" id="loginId" placeholder="아이디 입력" autocomplete="username">
+    <label for="loginPw">비밀번호</label>
+    <input type="password" id="loginPw" placeholder="비밀번호 입력" autocomplete="current-password">
+    <button class="btn-login" id="btnLogin" onclick="doLogin()">로그인</button>
+    <div class="login-error" id="loginError"></div>
+  </div>
+</div>
+
 <div class="container">
 
   <header>
@@ -322,6 +383,51 @@
 </div><!-- /.container -->
 
 <script>
+  // SHA-256("stoppah:1q2w3e4r") — 평문 비밀번호는 코드에 없음
+  const CREDENTIAL_HASH = 'fbe54b14d3a37e223280882cf6e53e24666f19f974dfd009c961781c939347ff';
+
+  async function sha256(str) {
+    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+  }
+
+  async function doLogin() {
+    const id  = document.getElementById('loginId').value.trim();
+    const pw  = document.getElementById('loginPw').value;
+    const err = document.getElementById('loginError');
+    const btn = document.getElementById('btnLogin');
+
+    if (!id || !pw) { err.textContent = '아이디와 비밀번호를 입력하세요.'; return; }
+
+    btn.disabled = true;
+    btn.textContent = '확인 중…';
+    err.textContent = '';
+
+    const hash = await sha256(id + ':' + pw);
+    if (hash === CREDENTIAL_HASH) {
+      sessionStorage.setItem('auth', '1');
+      document.getElementById('loginOverlay').style.display = 'none';
+    } else {
+      err.textContent = '아이디 또는 비밀번호가 올바르지 않습니다.';
+    }
+
+    btn.disabled = false;
+    btn.textContent = '로그인';
+  }
+
+  // Enter 키 지원
+  document.addEventListener('DOMContentLoaded', () => {
+    // 이미 인증된 세션이면 오버레이 바로 숨김
+    if (sessionStorage.getItem('auth') === '1') {
+      document.getElementById('loginOverlay').style.display = 'none';
+    }
+    ['loginId', 'loginPw'].forEach(id =>
+      document.getElementById(id).addEventListener('keydown', e => {
+        if (e.key === 'Enter') doLogin();
+      })
+    );
+  });
+
   const fmt = n => Number(n).toLocaleString('ko-KR');
   const sgn = n => (n >= 0 ? '+' : '') + n;
 
