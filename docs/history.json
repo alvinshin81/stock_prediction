@@ -1,4 +1,24 @@
 {
-  "005930": [],
-  "000660": []
+  "005930": [
+    {
+      "date": "2026-05-18",
+      "prev_prediction": "불확실",
+      "prev_p_up": 52.3,
+      "actual_direction": null,
+      "actual_change_pct": null,
+      "correct": null,
+      "is_preview": true
+    }
+  ],
+  "000660": [
+    {
+      "date": "2026-05-18",
+      "prev_prediction": "불확실",
+      "prev_p_up": 47.3,
+      "actual_direction": null,
+      "actual_change_pct": null,
+      "correct": null,
+      "is_preview": true
+    }
+  ]
 }
