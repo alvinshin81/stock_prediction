@@ -1019,8 +1019,11 @@ def export_history_json() -> dict:
             ORDER BY date DESC LIMIT 1
         """, (ticker,)).fetchone()
         if latest and latest[1]:
+            next_date = (
+                datetime.strptime(latest[0], "%Y-%m-%d") + timedelta(days=1)
+            ).strftime("%Y-%m-%d")
             entries.insert(0, {
-                "date":              latest[0],
+                "date":              next_date,
                 "prev_prediction":   latest[1],
                 "prev_p_up":         latest[2],
                 "actual_direction":  None,
