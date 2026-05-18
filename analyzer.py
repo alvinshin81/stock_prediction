@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 """
-삼성전자 (KRX: 005930) 매수/매도 추천 + 내일 방향 예측 스크립트
+국내 주식 매수/매도 추천 + 내일 방향 예측 스크립트
 
-데이터: pykrx (KRX·Naver 스크래핑)
-지표:   RSI, MACD, 볼린저밴드, 이동평균선, 거래량, 캔들 패턴
-출력:   당일 매수/매도 추천  +  내일 상승/하락 확률 (지표 가중 평균)
+분석 대상: 삼성전자(005930), SK하이닉스(000660)
+데이터:    pykrx (KRX·Naver 스크래핑)
+지표:      RSI, MACD, 볼린저밴드, 이동평균선, 거래량, 캔들 패턴
+출력:      당일 매수/매도 추천  +  내일 상승/하락 확률 (지표 가중 평균)
 
-설치:   pip install pykrx pandas numpy
-실행:   python analyzer.py
+설치:  pip install pykrx pandas numpy
+실행:  python analyzer.py
 """
 
 import json
@@ -20,8 +21,10 @@ import pandas as pd
 from pykrx import stock
 
 # ── 분석 대상 ────────────────────────────────────────────────
-TICKER = "005930"
-TICKER_NAME = "삼성전자"
+TICKERS = [
+    ("005930", "삼성전자"),
+    ("000660", "SK하이닉스"),
+]
 HISTORY_DAYS = 180              # 지표 계산용 히스토리 (거래일 기준으로 충분히 여유)
 
 # ── 지표 파라미터 ────────────────────────────────────────────
@@ -691,7 +694,8 @@ def _jv(v):
     return v
 
 
-def build_results_dict(df: pd.DataFrame, result: dict, forecast: dict) -> dict:
+def build_results_dict(df: pd.DataFrame, result: dict, forecast: dict,
+                       ticker: str, name: str) -> dict:
     """분석 결과 전체를 JSON 직렬화 가능한 dict로 반환."""
     close  = df["close"]
     price  = float(result["price"])
@@ -712,8 +716,8 @@ def build_results_dict(df: pd.DataFrame, result: dict, forecast: dict) -> dict:
 
     return {
         "meta": {
-            "ticker": TICKER,
-            "name":   TICKER_NAME,
+            "ticker": ticker,
+            "name":   name,
             "analyzed_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         },
         "price": {
@@ -917,30 +921,34 @@ def print_report(result: dict, ticker: str, name: str) -> None:
 #  메인 루프
 # ════════════════════════════════════════════════════════════
 
-def run(
-    ticker: str = TICKER,
-    name: str = TICKER_NAME,
-) -> None:
-    print(f"\n{name} ({ticker}) 분석 중...\n")
-    try:
-        df       = fetch_ohlcv(ticker)
-        result   = generate_recommendation(df)
-        forecast = calc_tomorrow_forecast(df, result["patterns"])
-        data     = build_results_dict(df, result, forecast)
+def run() -> None:
+    all_results = {}
 
+    for ticker, name in TICKERS:
+        print(f"\n{name} ({ticker}) 분석 중...\n")
+        try:
+            df       = fetch_ohlcv(ticker)
+            result   = generate_recommendation(df)
+            forecast = calc_tomorrow_forecast(df, result["patterns"])
+            data     = build_results_dict(df, result, forecast, ticker, name)
+            all_results[ticker] = data
+
+            print_verify(df)
+            print_report(result, ticker, name)
+            print_tomorrow_forecast(forecast)
+        except KeyboardInterrupt:
+            print("\n분석을 종료합니다.")
+            sys.exit(0)
+        except Exception as exc:
+            print(f"[오류] {name} ({ticker}): {exc}")
+
+    if all_results:
         os.makedirs("docs", exist_ok=True)
         with open("docs/results.json", "w", encoding="utf-8") as f:
-            json.dump(data, f, ensure_ascii=False, indent=2)
+            json.dump(all_results, f, ensure_ascii=False, indent=2)
         print("docs/results.json 저장 완료\n")
-
-        print_verify(df)
-        print_report(result, ticker, name)
-        print_tomorrow_forecast(forecast)
-    except KeyboardInterrupt:
-        print("\n분석을 종료합니다.")
-        sys.exit(0)
-    except Exception as exc:
-        print(f"[오류] {exc}")
+    else:
+        print("[오류] 분석 결과가 없어 저장을 건너뜁니다.")
         sys.exit(1)
 
 
