@@ -3,7 +3,7 @@
     {
       "date": "2026-05-21",
       "prev_prediction": "불확실",
-      "prev_p_up": 52.3,
+      "prev_p_up": 53.4,
       "actual_direction": null,
       "actual_change_pct": null,
       "correct": null,
@@ -13,8 +13,8 @@
       "date": "2026-05-20",
       "prev_prediction": "불확실",
       "prev_p_up": 52.3,
-      "actual_direction": "하락",
-      "actual_change_pct": -0.64,
+      "actual_direction": "상승",
+      "actual_change_pct": 0.18,
       "correct": null,
       "is_preview": false
     },
@@ -42,8 +42,8 @@
       "date": "2026-05-20",
       "prev_prediction": "불확실",
       "prev_p_up": 53.4,
-      "actual_direction": "상승",
-      "actual_change_pct": 0.23,
+      "actual_direction": "보합",
+      "actual_change_pct": 0.0,
       "correct": null,
       "is_preview": false
     },
