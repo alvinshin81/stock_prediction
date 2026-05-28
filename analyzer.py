@@ -625,9 +625,9 @@ def calc_tomorrow_forecast(df: pd.DataFrame, patterns: dict) -> dict:
         confidence, conf_range = "낮음", 10.0
 
     # 방향 판정
-    if p_up >= 0.58:
+    if p_up >= 0.55:
         direction, d_emoji = "상승", "📈"
-    elif p_up <= 0.42:
+    elif p_up <= 0.45:
         direction, d_emoji = "하락", "📉"
     else:
         direction, d_emoji = "불확실", "↔️"

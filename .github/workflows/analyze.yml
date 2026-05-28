@@ -3,7 +3,7 @@ name: 삼성전자 주식 분석
 on:
   schedule:
     # KST 09:00~15:30 = UTC 00:00~06:30, 평일 30분 간격
-    - cron: '0,30 0-6 * * 1-5'
+    - cron: '59,29 0-6 * * 1-5'
   workflow_dispatch: # 수동 실행 허용
 
 jobs:
