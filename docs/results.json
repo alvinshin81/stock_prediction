@@ -3,32 +3,32 @@
     "meta": {
       "ticker": "005930",
       "name": "삼성전자",
-      "analyzed_at": "2026-07-21 12:53:12"
+      "analyzed_at": "2026-07-21 15:22:14"
     },
     "price": {
-      "current": 261500,
-      "change_pct": 7.17
+      "current": 260000,
+      "change_pct": 6.56
     },
     "recommendation": {
       "action": "매도 (SELL)",
       "emoji": "🔴",
-      "total_score": -2,
-      "strength_pct": 13.3,
-      "strength_label": "약한 추천",
-      "entry": 261500,
-      "target": 243195,
+      "total_score": -4,
+      "strength_pct": 26.7,
+      "strength_label": "추천",
+      "entry": 260000,
+      "target": 241800,
       "target_pct": -7.0,
-      "stop_loss": 271960,
+      "stop_loss": 270400,
       "stop_loss_pct": 4.0
     },
     "levels": {
       "support": [
-        230361,
-        293508,
+        230116,
+        293483,
         240000
       ],
       "resistance": [
-        362388,
+        362483,
         362500
       ]
     },
@@ -36,31 +36,31 @@
       {
         "name": "RSI",
         "score": 0,
-        "detail": "42.9 → 중립",
+        "detail": "42.6 → 중립",
         "arrow": "─"
       },
       {
         "name": "MACD",
         "score": -1,
-        "detail": "MACD(-15736.7) < Signal(-9644.9) → 매도",
+        "detail": "MACD(-15856.4) < Signal(-9668.8) → 매도",
         "arrow": "▼"
       },
       {
         "name": "BB",
         "score": 0,
-        "detail": "밴드 내 24% 위치 (중립) [230,362~362,388]",
+        "detail": "밴드 내 23% 위치 (중립) [230,117~362,483]",
         "arrow": "─"
       },
       {
         "name": "MA",
-        "score": -1,
-        "detail": "↑MA5(260,600)  ↓MA20(296,375)  ↓MA60(293,508)",
+        "score": -3,
+        "detail": "↓MA5(260,300)  ↓MA20(296,300)  ↓MA60(293,483)",
         "arrow": "▼"
       },
       {
         "name": "VOL",
         "score": 0,
-        "detail": "평균 수준(0.4x) → 중립",
+        "detail": "평균 수준(0.6x) → 중립",
         "arrow": "─"
       },
       {
@@ -72,8 +72,8 @@
     ],
     "patterns": [],
     "forecast": {
-      "p_up": 47.8,
-      "p_down": 52.2,
+      "p_up": 46.6,
+      "p_down": 53.4,
       "direction": "불확실",
       "direction_emoji": "↔️",
       "confidence": "낮음",
@@ -83,7 +83,7 @@
           "name": "RSI",
           "p_up": 50.0,
           "weight": 25,
-          "reason": "RSI 42.9 중립 → 방향 불명 50%"
+          "reason": "RSI 42.6 중립 → 방향 불명 50%"
         },
         {
           "name": "MACD",
@@ -95,19 +95,19 @@
           "name": "볼린저밴드",
           "p_up": 50.0,
           "weight": 15,
-          "reason": "볼린저 중립 (24%) → 방향 불명 50%"
+          "reason": "볼린저 중립 (23%) → 방향 불명 50%"
         },
         {
           "name": "이동평균선",
-          "p_up": 46.0,
+          "p_up": 38.0,
           "weight": 15,
-          "reason": "MA 혼재 (1/3) → 중립 50%"
+          "reason": "MA 약세 정렬 (0/3) → 하락 62%"
         },
         {
           "name": "거래량",
           "p_up": 50.0,
           "weight": 10,
-          "reason": "거래량 보통(0.4x) → 중립 50%"
+          "reason": "거래량 보통(0.6x) → 중립 50%"
         },
         {
           "name": "캔들패턴",
@@ -143,7 +143,7 @@
         },
         {
           "date": "2026-07-21",
-          "price": 261500
+          "price": 260000
         }
       ],
       "rsi": [
@@ -157,7 +157,7 @@
         },
         {
           "date": "2026-07-21",
-          "value": 42.93
+          "value": 42.55
         }
       ],
       "macd": [
@@ -175,21 +175,21 @@
         },
         {
           "date": "2026-07-21",
-          "macd": -15736.7,
-          "signal": -9644.92,
-          "hist": -6091.78
+          "macd": -15856.36,
+          "signal": -9668.85,
+          "hist": -6187.51
         }
       ],
       "bollinger": {
-        "upper": 362388.0,
-        "middle": 296375.0,
-        "lower": 230362.0
+        "upper": 362483.0,
+        "middle": 296300.0,
+        "lower": 230117.0
       },
       "moving_averages": {
-        "MA5": 260600.0,
-        "MA20": 296375.0,
-        "MA60": 293508.0,
-        "MA120": 239708.0
+        "MA5": 260300.0,
+        "MA20": 296300.0,
+        "MA60": 293483.0,
+        "MA120": 239695.0
       }
     }
   },
@@ -197,11 +197,11 @@
     "meta": {
       "ticker": "000660",
       "name": "SK하이닉스",
-      "analyzed_at": "2026-07-21 12:53:13"
+      "analyzed_at": "2026-07-21 15:22:14"
     },
     "price": {
-      "current": 1883000,
-      "change_pct": 6.75
+      "current": 1847000,
+      "change_pct": 4.71
     },
     "recommendation": {
       "action": "매도 (SELL)",
@@ -209,20 +209,20 @@
       "total_score": -4,
       "strength_pct": 26.7,
       "strength_label": "추천",
-      "entry": 1883000,
-      "target": 1751190,
+      "entry": 1847000,
+      "target": 1717710,
       "target_pct": -7.0,
-      "stop_loss": 1958320,
+      "stop_loss": 1920880,
       "stop_loss_pct": 4.0
     },
     "levels": {
       "support": [
-        1603161,
-        2056700,
+        1596764,
+        2056100,
         1678000
       ],
       "resistance": [
-        2945838,
+        2948635,
         2987000
       ]
     },
@@ -230,31 +230,31 @@
       {
         "name": "RSI",
         "score": 0,
-        "detail": "42.5 → 중립",
+        "detail": "41.5 → 중립",
         "arrow": "─"
       },
       {
         "name": "MACD",
         "score": -1,
-        "detail": "MACD(-113391.7) < Signal(-38989.9) → 매도",
+        "detail": "MACD(-116263.5) < Signal(-39564.2) → 매도",
         "arrow": "▼"
       },
       {
         "name": "BB",
         "score": 0,
-        "detail": "밴드 내 21% 위치 (중립) [1,603,161~2,945,839]",
+        "detail": "밴드 내 19% 위치 (중립) [1,596,764~2,948,636]",
         "arrow": "─"
       },
       {
         "name": "MA",
         "score": -3,
-        "detail": "↓MA5(1,896,800)  ↓MA20(2,274,500)  ↓MA60(2,056,700)",
+        "detail": "↓MA5(1,889,600)  ↓MA20(2,272,700)  ↓MA60(2,056,100)",
         "arrow": "▼"
       },
       {
         "name": "VOL",
         "score": 0,
-        "detail": "평균 수준(0.5x) → 중립",
+        "detail": "평균 수준(0.7x) → 중립",
         "arrow": "─"
       },
       {
@@ -266,8 +266,8 @@
     ],
     "patterns": [],
     "forecast": {
-      "p_up": 46.6,
-      "p_down": 53.4,
+      "p_up": 47.8,
+      "p_down": 52.2,
       "direction": "불확실",
       "direction_emoji": "↔️",
       "confidence": "낮음",
@@ -277,7 +277,7 @@
           "name": "RSI",
           "p_up": 50.0,
           "weight": 25,
-          "reason": "RSI 42.5 중립 → 방향 불명 50%"
+          "reason": "RSI 41.5 중립 → 방향 불명 50%"
         },
         {
           "name": "MACD",
@@ -287,9 +287,9 @@
         },
         {
           "name": "볼린저밴드",
-          "p_up": 50.0,
+          "p_up": 58.0,
           "weight": 15,
-          "reason": "볼린저 중립 (21%) → 방향 불명 50%"
+          "reason": "볼린저 하단 근접 (19%) → 반등 가능 58%"
         },
         {
           "name": "이동평균선",
@@ -301,7 +301,7 @@
           "name": "거래량",
           "p_up": 50.0,
           "weight": 10,
-          "reason": "거래량 보통(0.5x) → 중립 50%"
+          "reason": "거래량 보통(0.7x) → 중립 50%"
         },
         {
           "name": "캔들패턴",
@@ -337,7 +337,7 @@
         },
         {
           "date": "2026-07-21",
-          "price": 1883000
+          "price": 1847000
         }
       ],
       "rsi": [
@@ -351,7 +351,7 @@
         },
         {
           "date": "2026-07-21",
-          "value": 42.55
+          "value": 41.49
         }
       ],
       "macd": [
@@ -369,21 +369,21 @@
         },
         {
           "date": "2026-07-21",
-          "macd": -113391.68,
-          "signal": -38989.86,
-          "hist": -74401.82
+          "macd": -116263.47,
+          "signal": -39564.22,
+          "hist": -76699.26
         }
       ],
       "bollinger": {
-        "upper": 2945839.0,
-        "middle": 2274500.0,
-        "lower": 1603161.0
+        "upper": 2948636.0,
+        "middle": 2272700.0,
+        "lower": 1596764.0
       },
       "moving_averages": {
-        "MA5": 1896800.0,
-        "MA20": 2274500.0,
-        "MA60": 2056700.0,
-        "MA120": 1498825.0
+        "MA5": 1889600.0,
+        "MA20": 2272700.0,
+        "MA60": 2056100.0,
+        "MA120": 1498525.0
       }
     }
   }
