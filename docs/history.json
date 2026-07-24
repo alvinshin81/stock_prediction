@@ -284,7 +284,7 @@
     {
       "date": "2026-07-25",
       "prev_prediction": "불확실",
-      "prev_p_up": 47.8,
+      "prev_p_up": 49.0,
       "actual_direction": null,
       "actual_change_pct": null,
       "correct": null,
@@ -295,7 +295,7 @@
       "prev_prediction": "불확실",
       "prev_p_up": 47.8,
       "actual_direction": "하락",
-      "actual_change_pct": -7.24,
+      "actual_change_pct": -8.49,
       "correct": null,
       "is_preview": false
     },
