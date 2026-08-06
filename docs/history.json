@@ -14,7 +14,7 @@
       "prev_prediction": "불확실",
       "prev_p_up": 53.0,
       "actual_direction": "하락",
-      "actual_change_pct": -5.69,
+      "actual_change_pct": -6.5,
       "correct": null,
       "is_preview": false
     },
@@ -295,7 +295,7 @@
       "prev_prediction": "불확실",
       "prev_p_up": 49.0,
       "actual_direction": "하락",
-      "actual_change_pct": -8.99,
+      "actual_change_pct": -10.73,
       "correct": null,
       "is_preview": false
     },
