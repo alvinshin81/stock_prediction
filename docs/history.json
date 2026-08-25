@@ -294,8 +294,8 @@
       "date": "2026-08-25",
       "prev_prediction": "불확실",
       "prev_p_up": 51.0,
-      "actual_direction": "하락",
-      "actual_change_pct": -0.24,
+      "actual_direction": "상승",
+      "actual_change_pct": 0.03,
       "correct": null,
       "is_preview": false
     },
