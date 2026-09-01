@@ -13,8 +13,8 @@
       "date": "2026-09-01",
       "prev_prediction": "불확실",
       "prev_p_up": 49.8,
-      "actual_direction": "하락",
-      "actual_change_pct": -0.38,
+      "actual_direction": "상승",
+      "actual_change_pct": 0.38,
       "correct": null,
       "is_preview": false
     },
@@ -295,7 +295,7 @@
       "prev_prediction": "불확실",
       "prev_p_up": 49.8,
       "actual_direction": "상승",
-      "actual_change_pct": 0.81,
+      "actual_change_pct": 1.14,
       "correct": null,
       "is_preview": false
     },
