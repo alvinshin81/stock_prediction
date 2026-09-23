@@ -3,7 +3,7 @@
     {
       "date": "2026-09-24",
       "prev_prediction": "불확실",
-      "prev_p_up": 52.7,
+      "prev_p_up": 51.0,
       "actual_direction": null,
       "actual_change_pct": null,
       "correct": null,
@@ -14,7 +14,7 @@
       "prev_prediction": "불확실",
       "prev_p_up": 52.2,
       "actual_direction": "상승",
-      "actual_change_pct": 2.34,
+      "actual_change_pct": 2.88,
       "correct": null,
       "is_preview": false
     },
@@ -284,7 +284,7 @@
     {
       "date": "2026-09-24",
       "prev_prediction": "불확실",
-      "prev_p_up": 53.4,
+      "prev_p_up": 52.2,
       "actual_direction": null,
       "actual_change_pct": null,
       "correct": null,
@@ -295,7 +295,7 @@
       "prev_prediction": "불확실",
       "prev_p_up": 51.0,
       "actual_direction": "상승",
-      "actual_change_pct": 0.49,
+      "actual_change_pct": 1.25,
       "correct": null,
       "is_preview": false
     },
