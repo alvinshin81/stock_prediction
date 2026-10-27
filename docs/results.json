@@ -3,58 +3,58 @@
     "meta": {
       "ticker": "005930",
       "name": "삼성전자",
-      "analyzed_at": "2026-10-26 20:20:22"
+      "analyzed_at": "2026-10-27 14:20:06"
     },
     "price": {
-      "current": 213500,
-      "change_pct": 0.0
+      "current": 222000,
+      "change_pct": 3.98
     },
     "recommendation": {
       "action": "매도 (SELL)",
       "emoji": "🔴",
-      "total_score": -4,
-      "strength_pct": 26.7,
-      "strength_label": "추천",
-      "entry": 213500,
-      "target": 201465,
-      "target_pct": -5.6,
-      "stop_loss": 222040,
+      "total_score": -2,
+      "strength_pct": 13.3,
+      "strength_label": "약한 추천",
+      "entry": 222000,
+      "target": 206460,
+      "target_pct": -7.0,
+      "stop_loss": 230880,
       "stop_loss_pct": 4.0
     },
     "levels": {
       "support": [
-        188788,
-        250883,
+        188282,
+        250916,
         203500
       ],
       "resistance": [
-        301011,
-        286500
+        295067,
+        285500
       ]
     },
     "indicators": [
       {
         "name": "RSI",
         "score": 0,
-        "detail": "37.0 → 중립",
+        "detail": "41.7 → 중립",
         "arrow": "─"
       },
       {
         "name": "MACD",
         "score": -1,
-        "detail": "MACD(-13730.8) < Signal(-10225.9) → 매도",
+        "detail": "MACD(-13057.4) < Signal(-10792.2) → 매도",
         "arrow": "▼"
       },
       {
         "name": "BB",
         "score": 0,
-        "detail": "밴드 내 22% 위치 (중립) [188,789~301,011]",
+        "detail": "밴드 내 32% 위치 (중립) [188,282~295,068]",
         "arrow": "─"
       },
       {
         "name": "MA",
-        "score": -3,
-        "detail": "↓MA5(214,800)  ↓MA20(244,900)  ↓MA60(250,883)",
+        "score": -1,
+        "detail": "↑MA5(217,400)  ↓MA20(241,675)  ↓MA60(250,917)",
         "arrow": "▼"
       },
       {
@@ -77,8 +77,8 @@
       }
     ],
     "forecast": {
-      "p_up": 46.5,
-      "p_down": 53.5,
+      "p_up": 49.0,
+      "p_down": 51.0,
       "direction": "불확실",
       "direction_emoji": "↔️",
       "confidence": "낮음",
@@ -86,9 +86,9 @@
       "indicators": [
         {
           "name": "RSI",
-          "p_up": 45.0,
+          "p_up": 50.0,
           "weight": 25,
-          "reason": "RSI 37.0 약세권 → 하락 유지 55%"
+          "reason": "RSI 41.7 중립 → 방향 불명 50%"
         },
         {
           "name": "MACD",
@@ -100,13 +100,13 @@
           "name": "볼린저밴드",
           "p_up": 50.0,
           "weight": 15,
-          "reason": "볼린저 중립 (22%) → 방향 불명 50%"
+          "reason": "볼린저 중립 (32%) → 방향 불명 50%"
         },
         {
           "name": "이동평균선",
-          "p_up": 38.0,
+          "p_up": 46.0,
           "weight": 15,
-          "reason": "MA 약세 정렬 (0/3) → 하락 62%"
+          "reason": "MA 혼재 (1/3) → 중립 50%"
         },
         {
           "name": "거래량",
@@ -131,10 +131,6 @@
     "verify": {
       "recent_closes": [
         {
-          "date": "2026-10-20",
-          "price": 209000
-        },
-        {
           "date": "2026-10-21",
           "price": 223500
         },
@@ -149,13 +145,13 @@
         {
           "date": "2026-10-26",
           "price": 213500
+        },
+        {
+          "date": "2026-10-27",
+          "price": 222000
         }
       ],
       "rsi": [
-        {
-          "date": "2026-10-22",
-          "value": 37.29
-        },
         {
           "date": "2026-10-23",
           "value": 36.99
@@ -163,18 +159,16 @@
         {
           "date": "2026-10-26",
           "value": 36.99
+        },
+        {
+          "date": "2026-10-27",
+          "value": 41.73
         }
       ],
       "macd": [
         {
-          "date": "2026-10-22",
-          "macd": -13065.81,
-          "signal": -8305.79,
-          "hist": -4760.02
-        },
-        {
           "date": "2026-10-23",
-          "macd": -13525.08,
+          "macd": -13525.07,
           "signal": -9349.65,
           "hist": -4175.43
         },
@@ -183,17 +177,23 @@
           "macd": -13730.77,
           "signal": -10225.87,
           "hist": -3504.9
+        },
+        {
+          "date": "2026-10-27",
+          "macd": -13057.38,
+          "signal": -10792.17,
+          "hist": -2265.21
         }
       ],
       "bollinger": {
-        "upper": 301011.0,
-        "middle": 244900.0,
-        "lower": 188789.0
+        "upper": 295068.0,
+        "middle": 241675.0,
+        "lower": 188282.0
       },
       "moving_averages": {
-        "MA5": 214800.0,
-        "MA20": 244900.0,
-        "MA60": 250883.0,
+        "MA5": 217400.0,
+        "MA20": 241675.0,
+        "MA60": 250917.0,
         "MA120": 273408.0
       }
     }
@@ -202,77 +202,82 @@
     "meta": {
       "ticker": "000660",
       "name": "SK하이닉스",
-      "analyzed_at": "2026-10-26 20:20:23"
+      "analyzed_at": "2026-10-27 14:20:07"
     },
     "price": {
-      "current": 1290000,
-      "change_pct": 2.14
+      "current": 1355000,
+      "change_pct": 5.04
     },
     "recommendation": {
-      "action": "매도 (SELL)",
-      "emoji": "🔴",
-      "total_score": -2,
-      "strength_pct": 13.3,
-      "strength_label": "약한 추천",
-      "entry": 1290000,
-      "target": 1199700,
-      "target_pct": -7.0,
-      "stop_loss": 1341600,
-      "stop_loss_pct": 4.0
+      "action": "관망 (HOLD)",
+      "emoji": "🟡",
+      "total_score": 0,
+      "strength_pct": 0.0,
+      "strength_label": "해당 없음",
+      "entry": 1355000,
+      "target": 1355000,
+      "target_pct": 0,
+      "stop_loss": 1355000,
+      "stop_loss_pct": 0
     },
     "levels": {
       "support": [
-        1022782,
-        1612116,
+        1016971,
+        1608866,
         1171000
       ],
       "resistance": [
-        2038217,
-        1900000
+        1993228,
+        1855000
       ]
     },
     "indicators": [
       {
         "name": "RSI",
         "score": 0,
-        "detail": "36.4 → 중립",
+        "detail": "41.1 → 중립",
         "arrow": "─"
       },
       {
         "name": "MACD",
         "score": -1,
-        "detail": "MACD(-135822.1) < Signal(-107630.9) → 매도",
+        "detail": "MACD(-126656.1) < Signal(-111435.9) → 매도",
         "arrow": "▼"
       },
       {
         "name": "BB",
         "score": 0,
-        "detail": "밴드 내 26% 위치 (중립) [1,022,783~2,038,217]",
+        "detail": "밴드 내 35% 위치 (중립) [1,016,972~1,993,228]",
         "arrow": "─"
       },
       {
         "name": "MA",
         "score": -1,
-        "detail": "↑MA5(1,253,000)  ↓MA20(1,530,500)  ↓MA60(1,612,117)",
+        "detail": "↑MA5(1,286,000)  ↓MA20(1,505,100)  ↓MA60(1,608,867)",
         "arrow": "▼"
       },
       {
         "name": "VOL",
         "score": 0,
-        "detail": "평균 수준(0.7x) → 중립",
+        "detail": "평균 수준(0.6x) → 중립",
         "arrow": "─"
       },
       {
         "name": "CANDLE",
-        "score": 0,
-        "detail": "특이 패턴 없음",
-        "arrow": "─"
+        "score": 2,
+        "detail": "적삼병(상승 지속 신호 (강한 매수))",
+        "arrow": "▲"
       }
     ],
-    "patterns": [],
+    "patterns": [
+      {
+        "name": "적삼병",
+        "detail": "상승 지속 신호 (강한 매수) ★★★★"
+      }
+    ],
     "forecast": {
-      "p_up": 46.6,
-      "p_down": 53.4,
+      "p_up": 49.0,
+      "p_down": 51.0,
       "direction": "불확실",
       "direction_emoji": "↔️",
       "confidence": "낮음",
@@ -280,9 +285,9 @@
       "indicators": [
         {
           "name": "RSI",
-          "p_up": 45.0,
+          "p_up": 50.0,
           "weight": 25,
-          "reason": "RSI 36.4 약세권 → 하락 유지 55%"
+          "reason": "RSI 41.1 중립 → 방향 불명 50%"
         },
         {
           "name": "MACD",
@@ -294,7 +299,7 @@
           "name": "볼린저밴드",
           "p_up": 50.0,
           "weight": 15,
-          "reason": "볼린저 중립 (26%) → 방향 불명 50%"
+          "reason": "볼린저 중립 (35%) → 방향 불명 50%"
         },
         {
           "name": "이동평균선",
@@ -306,13 +311,13 @@
           "name": "거래량",
           "p_up": 50.0,
           "weight": 10,
-          "reason": "거래량 보통(0.7x) → 중립 50%"
+          "reason": "거래량 보통(0.6x) → 중립 50%"
         },
         {
           "name": "캔들패턴",
-          "p_up": 50.0,
+          "p_up": 61.8,
           "weight": 10,
-          "reason": "패턴 없음 → 중립 50%"
+          "reason": "강한 상승 패턴 1개 → 피보나치 상승 61.8%"
         },
         {
           "name": "피보나치",
@@ -324,10 +329,6 @@
     },
     "verify": {
       "recent_closes": [
-        {
-          "date": "2026-10-20",
-          "price": 1190000
-        },
         {
           "date": "2026-10-21",
           "price": 1288000
@@ -343,13 +344,13 @@
         {
           "date": "2026-10-26",
           "price": 1290000
+        },
+        {
+          "date": "2026-10-27",
+          "price": 1355000
         }
       ],
       "rsi": [
-        {
-          "date": "2026-10-22",
-          "value": 32.1
-        },
         {
           "date": "2026-10-23",
           "value": 34.29
@@ -357,38 +358,42 @@
         {
           "date": "2026-10-26",
           "value": 36.35
+        },
+        {
+          "date": "2026-10-27",
+          "value": 41.13
         }
       ],
       "macd": [
         {
-          "date": "2026-10-22",
-          "macd": -138121.44,
-          "signal": -90996.93,
-          "hist": -47124.51
-        },
-        {
           "date": "2026-10-23",
-          "macd": -138927.59,
-          "signal": -100583.06,
-          "hist": -38344.53
+          "macd": -138927.62,
+          "signal": -100583.09,
+          "hist": -38344.52
         },
         {
           "date": "2026-10-26",
-          "macd": -135822.13,
-          "signal": -107630.87,
-          "hist": -28191.26
+          "macd": -135822.15,
+          "signal": -107630.9,
+          "hist": -28191.25
+        },
+        {
+          "date": "2026-10-27",
+          "macd": -126656.08,
+          "signal": -111435.94,
+          "hist": -15220.14
         }
       ],
       "bollinger": {
-        "upper": 2038217.0,
-        "middle": 1530500.0,
-        "lower": 1022783.0
+        "upper": 1993228.0,
+        "middle": 1505100.0,
+        "lower": 1016972.0
       },
       "moving_averages": {
-        "MA5": 1253000.0,
-        "MA20": 1530500.0,
-        "MA60": 1612117.0,
-        "MA120": 1853700.0
+        "MA5": 1286000.0,
+        "MA20": 1505100.0,
+        "MA60": 1608867.0,
+        "MA120": 1854158.0
       }
     }
   }
